@@ -1,6 +1,6 @@
 <template>
   <v-layout column>
-    <v-flex xs6 offset-xs3>
+    <v-flex xs6 justify-center>
       <panel title="Register">
         <form
           name="tab-tracker-form"
