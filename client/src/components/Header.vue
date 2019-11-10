@@ -8,11 +8,11 @@
           TabTracker
         </span>
       </v-toolbar-title>
-      <!-- <v-toolbar-items>
-        <v-btn text dark>
+      <v-toolbar-items>
+        <v-btn text dark @click="navigateTo({name:'songs'})">
           BROWSE
         </v-btn>
-      </v-toolbar-items> -->
+      </v-toolbar-items>
       <v-spacer />
       <v-toolbar-items>
         <v-btn v-if="!$store.state.isLogedIn" text dark @click="navigateTo({name:'login'})">
@@ -24,6 +24,11 @@
           SIGN UP
         </v-btn>
       </v-toolbar-items>
+      <v-toolbar-items>
+        <v-btn v-if="$store.state.isLogedIn" text dark @click="logout">
+          LOGOUT
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
   </div>
 </template>
@@ -33,14 +38,14 @@ export default {
   methods: {
     navigateTo (route) {
       this.$router.push(route)
+    },
+    logout () {
+      this.$store.dispatch('setToken', null)
+      this.$store.dispatch('setUser', null)
+      this.$router.push({
+        name: 'root'
+      })
     }
-    // logout () {
-    //   this.$store.dispatch('setToken', null)
-    //   this.$store.dispatch('setUser', null)
-    //   this.$router.push({
-    //     name: 'songs'
-    //   })
-    // }
   }
 }
 </script>
