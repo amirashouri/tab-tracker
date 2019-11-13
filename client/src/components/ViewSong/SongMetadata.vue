@@ -1,45 +1,107 @@
 <template >
-<panel title="Song Metadata">
-            <v-layout>
-              <v-flex xs6>
-                <div class="song-title">
-                  {{song.title}}
-                </div>
-                <div class="song-artist">
-                  {{song.artist}}
-                </div>
-                <div class="song-genre">
-                  {{song.genre}}
-                </div>
-                <v-btn
-                    dark
-                    class="cyan"
-                    @click="navigateTo({name: 'edit-song', params: {songId: song.id}})">
-                Edit
-              </v-btn>
-              </v-flex>
-              <v-flex s6>
-                <img class="album-image" :src="song.albumImageUrl" />
-                <br>
-                {{song.album}}
-              </v-flex>
-            </v-layout>
-        </panel>
+  <panel title="Song Metadata">
+    <v-layout>
+      <v-flex xs6>
+        <div class="song-title">
+          {{song.title}}
+        </div>
+        <div class="song-artist">
+          {{song.artist}}
+        </div>
+        <div class="song-genre">
+          {{song.genre}}
+        </div>
+        <v-btn
+            dark
+            class="cyan"
+            :to="{
+              name: 'edit-song',
+              params () {
+                return {
+                  songId : song.id
+                }
+              }
+            }">
+          Edit
+        </v-btn>
+
+        <v-btn
+            v-if="isLogedIn && !bookmark"
+            dark
+            class="cyan"
+            @click="setAsBookmark">
+          Set As Bookmark
+        </v-btn>
+
+        <v-btn
+            v-if="isLogedIn && bookmark"
+            dark
+            class="cyan"
+            @click="unsetAsBookmark">
+          Unset As Bookmark
+        </v-btn>
+      </v-flex>
+      <v-flex s6>
+        <img class="album-image" :src="song.albumImageUrl" />
+        <br>
+        {{song.album}}
+      </v-flex>
+    </v-layout>
+  </panel>
 </template>
 
 <script>
-import Panel from '@/components/globals/Panel'
+import {mapState} from 'vuex'
+import BookmarksService from '@/services/BookmarksService'
 
 export default {
   props: [
     'song'
   ],
-  components: {
-    Panel
-  },
   methods: {
-    navigateTo (route) {
-      this.$router.push(route)
+    async setAsBookmark () {
+      try {
+        this.bookmark = (await BookmarksService.post({
+          songId: this.song.id,
+          userId: this.$store.state.user.id
+        })).data
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async unsetAsBookmark () {
+      try {
+        await BookmarksService.delete(this.bookmark.id)
+        this.bookmark = null
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  },
+  data () {
+    return {
+      bookmark: null
+    }
+  },
+  computed: {
+    ...mapState([
+      'isLogedIn'
+    ])
+  },
+  watch: {
+    async song () {
+      if (!this.isLogedIn) {
+        return
+      }
+      try {
+        this.bookmark = (await BookmarksService.index({
+          songId: this.song.id,
+          userId: this.$store.state.user.id
+        })).data
+        console.log('the watch method:', this.isLogedIn, this.bookmark)
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 }

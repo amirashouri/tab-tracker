@@ -1,5 +1,5 @@
 <template >
-    <panel tiele="Youtube Video">
+    <panel title="Youtube Video">
         <youtube
             :videoId="youtubeId"
             :player-width="700"
@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import Panel from '@/components/globals/Panel'
 import VueYouTubeEmbed from 'vue-youtube-embed'
 
 export default {
@@ -17,7 +16,6 @@ export default {
     'youtubeId'
   ],
   components: {
-    Panel,
     VueYouTubeEmbed
   }
 }
