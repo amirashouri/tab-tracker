@@ -41,7 +41,7 @@
           Unset As Bookmark
         </v-btn>
       </v-flex>
-      <v-flex s6>
+      <v-flex xs6>
         <img class="album-image" :src="song.albumImageUrl" />
         <br>
         {{song.album}}
@@ -63,7 +63,7 @@ export default {
       try {
         this.bookmark = (await BookmarksService.post({
           songId: this.song.id,
-          userId: this.$store.state.user.id
+          userId: this.user.id
         })).data
       } catch (err) {
         console.log(err)
@@ -85,7 +85,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'isLogedIn'
+      'isLogedIn',
+      'user'
     ])
   },
   watch: {
@@ -94,10 +95,13 @@ export default {
         return
       }
       try {
-        this.bookmark = (await BookmarksService.index({
+        const bookmarks = (await BookmarksService.index({
           songId: this.song.id,
-          userId: this.$store.state.user.id
+          userId: this.user.id
         })).data
+        if (bookmarks.length) {
+          this.bookmark = bookmarks[0]
+        }
         console.log('the watch method:', this.isLogedIn, this.bookmark)
       } catch (err) {
         console.log(err)
